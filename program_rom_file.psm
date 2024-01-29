@@ -1,0 +1,56 @@
+; CONSTANT DIRECTIVE
+; ------------------
+CONSTANT in_porta, 01
+CONSTANT in_portb, 02
+CONSTANT in_portc, 04
+CONSTANT in_portd, 08
+CONSTANT out_portw, 01
+CONSTANT out_portx, 02
+CONSTANT out_porty, 04
+CONSTANT out_portz, 08
+CONSTANT out_portk0, 01
+CONSTANT out_portk1, 02          
+
+; MAIN CODE
+; ------------------
+ADDRESS 000
+ENABLE INTERRUPT
+loop:
+OUTPUTK 00,out_portk0
+JUMP loop
+
+isr:
+LOAD s0,00 ;s0 einai o counter
+LOAD s7, 00	;oi 2 kataxwrhtes gia ta 16 bit
+LOAD s8, 00
+
+innerloop:
+	OUTPUT s0,out_portw
+	LOAD s4, 00 ;gia kathusterhsh logw ths mnhmhs ram
+	INPUT s1, in_porta ;edw pairnw arithmo apo ram
+	ADD s7,s1	;s7,s8 exw to apotelesma gia 16bit
+	ADDCY s8, 00
+	ADD s0, 01
+	COMPARE s0, 08
+	JUMP C, innerloop
+			;;edw teleiwsa to diabasma
+;OUTPUT s8,out_portx
+;OUTPUT s7,out_portx
+					;;edw kanw to shift right 3, diairesh dia 8
+SR0 s8	;dexia olisthisi tou msb
+SRA	s7	;an exoume carry apo th dexia olosthisi to fortwnei sto lsb(s7)
+SR0 s8
+SRA	s7
+SR0 s8
+SRA	s7
+OUTPUT s7,out_portx
+OUTPUTK 01,out_portk0	;gia to shma avg_o_en pou thelw
+OUTPUTK 00,out_portk0 ;gia to shma avg_o_en pou thelw ;energopoihsh mono gia 1 kuklo
+RETURNI ENABLE
+
+ADDRESS 3FF
+JUMP isr
+;
+;Only comments or CONSTANT directives can be specified after the last memory location.
+;End of file
+;
